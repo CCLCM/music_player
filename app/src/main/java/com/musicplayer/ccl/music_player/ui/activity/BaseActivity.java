@@ -39,4 +39,17 @@ public abstract class  BaseActivity extends Activity implements View.OnClickList
     /**初始数据*/
     protected abstract void initData();
 
+    protected abstract void processClick(View view);
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.back:
+                finish();
+                break;
+            default:
+                processClick(view);
+        }
+
+    }
+
 }
