@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.musicplayer.ccl.music_player.R;
+
+import utils.LogUtils;
 
 /**
  * Created by ccl on 18-1-30.
@@ -24,6 +27,15 @@ public abstract class  BaseActivity extends Activity implements View.OnClickList
         initView();
         initListener();
         initData();
+        registerCommonBtn();
+    }
+    /**多个界面在此处点击注册*/
+    protected  void registerCommonBtn(){
+        View view = findViewById(R.id.back);
+        if (view != null){
+            view.setOnClickListener(this);
+        }
+
     }
 
     /**
@@ -50,6 +62,18 @@ public abstract class  BaseActivity extends Activity implements View.OnClickList
                 processClick(view);
         }
 
+    }
+
+    public  void toast(String msg) {
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+    }
+
+    public  void toast(int msgId) {
+        Toast.makeText(this,msgId,Toast.LENGTH_SHORT).show();
+    }
+    /**显示一个error等级的log*/
+    public  void logE(String log) {
+        LogUtils.e(getClass(),log);
     }
 
 }
