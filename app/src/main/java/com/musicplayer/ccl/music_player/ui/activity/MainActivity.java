@@ -1,7 +1,9 @@
-package com.musicplayer.ccl.music_player;
+package com.musicplayer.ccl.music_player.ui.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.musicplayer.ccl.music_player.R;
 
 public class MainActivity extends AppCompatActivity {
 
