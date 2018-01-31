@@ -22,13 +22,14 @@
             android:textColor="@color/green"/>
         <!--音乐-->
         <TextView
+
             android:gravity="center"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="音乐"
             android:textSize="16sp"
-            android:textColor="@color/green"/>
+            android:textColor="@color/halfwhite"/>
 
 
     </LinearLayout>
@@ -42,6 +43,7 @@
 
     <!--播放列表-->
     <android.support.v4.view.ViewPager
+        android:id="@+id/mian_viewpager"
         android:layout_below="@id/main_ll_tabs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

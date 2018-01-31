@@ -1,11 +1,11 @@
-package com.musicplayer.ccl.music_player.ui.activity;
+package com.musicplayer.ccl.music_player.ui.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.musicplayer.ccl.music_player.R;
@@ -13,26 +13,26 @@ import com.musicplayer.ccl.music_player.R;
 import utils.LogUtils;
 
 /**
- * Created by ccl on 18-1-30.
- * 1.规范代码结构
- * 2.提供公用的方法
- * 3
+ * Created by ccl on 18-1-31.
  */
 
-public abstract class  BaseActivity extends FragmentActivity implements View.OnClickListener {
-
+public abstract class BaseFragment extends Fragment implements View.OnClickListener {
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(layouId());
-        initView();
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = View.inflate(getActivity(),getLayoutId(),null);
+        initView(view);
         initListener();
         initData();
-        registerCommonBtn();
+        registerCommonBtn(view);
+        return view;
     }
-    /**多个界面在此处点击注册*/
-    protected  void registerCommonBtn(){
-        View view = findViewById(R.id.back);
+
+
+    /**多个界面在此处点击注册
+     * @param root*/
+    protected  void registerCommonBtn(View root){
+        View view = root.findViewById(R.id.back);
         if (view != null){
             view.setOnClickListener(this);
         }
@@ -44,9 +44,9 @@ public abstract class  BaseActivity extends FragmentActivity implements View.OnC
      * @return
      */
     /**执行findviewbyid 操作*/
-    protected abstract int layouId();
+    protected abstract int getLayoutId();
     /**初始化方法*/
-    protected abstract void initView();
+    protected abstract void initView(View view);
     /**祖册监听器*/
     protected abstract void initListener();
     /**初始数据*/
@@ -57,7 +57,7 @@ public abstract class  BaseActivity extends FragmentActivity implements View.OnC
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.back:
-                finish();
+                getFragmentManager().popBackStack();
                 break;
             default:
                 processClick(view);
@@ -66,15 +66,14 @@ public abstract class  BaseActivity extends FragmentActivity implements View.OnC
     }
 
     public  void toast(String msg) {
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
     }
 
     public  void toast(int msgId) {
-        Toast.makeText(this,msgId,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(),msgId,Toast.LENGTH_SHORT).show();
     }
     /**显示一个error等级的log*/
     public  void logE(String log) {
         LogUtils.e(getClass(),log);
     }
-
 }
