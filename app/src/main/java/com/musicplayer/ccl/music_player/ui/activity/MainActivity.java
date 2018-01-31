@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 //            LogUtils.e(getClass(),"position " +position+ "   positionOffset  " +positionOffset + "   positionOffsetPixels " +positionOffsetPixels) ;
-                //移动距离 = 起始位置 + 偏移大小
+                // 移动距离 = 起始位置 + 偏移大小
                 // 起始位置 = posion  * 指示器宽度
                 // 偏移大小 = 手指划过屏幕的百分百 * 指示器宽度
                 int offsetX = (int) (positionOffset * mainIndicateLine.getWidth());
