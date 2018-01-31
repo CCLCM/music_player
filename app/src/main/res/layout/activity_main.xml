@@ -13,6 +13,7 @@
         android:layout_height="55dp">
         <!--视频-->
         <TextView
+            android:id="@+id/mian_tv_video"
             android:gravity="center"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -22,7 +23,7 @@
             android:textColor="@color/green"/>
         <!--音乐-->
         <TextView
-
+            android:id="@+id/mian_tv_audio"
             android:gravity="center"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -35,7 +36,8 @@
     </LinearLayout>
     <!--指示器-->
     <View
-        android:layout_width="match_parent"
+        android:id="@+id/main_indicate_line"
+        android:layout_width="200dp"
         android:layout_height="2dp"
         android:layout_alignBottom="@+id/main_ll_tabs"
         android:background="@color/green" />
