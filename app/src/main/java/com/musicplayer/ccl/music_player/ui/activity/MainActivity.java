@@ -81,6 +81,16 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void processClick(View view) {
 
+        switch (view.getId()) {
+
+            case R.id.mian_tv_video:
+                viewPager.setCurrentItem(0);
+                break;
+            case R.id.mian_tv_audio:
+                viewPager.setCurrentItem(1);
+                break;
+        }
+
     }
 
     /**
