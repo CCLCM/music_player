@@ -1,13 +1,9 @@
 package com.musicplayer.ccl.music_player.ui.activity;
 
-import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.musicplayer.ccl.music_player.R;
@@ -54,7 +50,7 @@ public abstract class  BaseActivity extends FragmentActivity implements View.OnC
     /**初始数据*/
     protected abstract void initData();
 
-    protected abstract void processClick(View view);
+    protected abstract void processClick( View view);
     @Override
     public void onClick(View view) {
         switch (view.getId()) {

@@ -1,8 +1,5 @@
 package com.musicplayer.ccl.music_player.ui.activity;
 
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -16,12 +13,8 @@ import com.musicplayer.ccl.music_player.ui.fragment.AudioListFragment;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import utils.LogUtils;
 
 public class MainActivity extends BaseActivity {
 
@@ -32,6 +25,8 @@ public class MainActivity extends BaseActivity {
     private TextView tv_audio;
     private View mainIndicateLine;
     private int screenWidth;
+    private AudioListFragment audioListFragment;
+    private MusicListFragment musicListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +55,16 @@ public class MainActivity extends BaseActivity {
         viewPager.setOnPageChangeListener(new OnVideoPageChangeListener());
         tv_video.setOnClickListener(this);
         tv_audio.setOnClickListener(this);
+
     }
+
 
     @Override
     protected void initData() {
-        mFragments.add(new AudioListFragment());
-        mFragments.add(new MusicListFragment());
+        audioListFragment = new AudioListFragment();
+        musicListFragment = new MusicListFragment();
+        mFragments.add(audioListFragment);
+        mFragments.add(musicListFragment);
         mAdapter.notifyDataSetChanged();
         updateTabs(0);
 
@@ -73,7 +72,7 @@ public class MainActivity extends BaseActivity {
 
         screenWidth = getWindowManager().getDefaultDisplay().getWidth();
         mainIndicateLine.getLayoutParams().width = screenWidth /2;
-//        mainIndicateLine.invalidate();
+       // mainIndicateLine.invalidate();
         mainIndicateLine.requestLayout();
 
 
