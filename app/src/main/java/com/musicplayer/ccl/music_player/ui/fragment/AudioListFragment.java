@@ -41,7 +41,9 @@ public class AudioListFragment extends BaseFragment {
     protected void initData() {
             ContentResolver resolver = getActivity().getContentResolver();
             cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, new String[]{Media.DATA, Media.TITLE, Media.SIZE, Media.DURATION}, null, null, null);
-            CursorUtils.printCursor(cursor);
+            if (cursor !=null) {
+                CursorUtils.printCursor(cursor);
+            }
 
     }
 
