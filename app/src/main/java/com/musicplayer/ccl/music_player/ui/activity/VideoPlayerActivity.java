@@ -4,12 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.MediaController;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -17,7 +19,6 @@ import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
 
 
-import utils.LogUtils;
 import utils.StringUtils;
 
 /**
@@ -33,7 +34,7 @@ public class VideoPlayerActivity extends BaseActivity {
     private ImageView iv_battery;
     private TextView tv_system_time;
     private static final int MSG_UPDATE_SYSTEM_TIME =0;
-    private Handler handler = new Handler(){
+    private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -43,6 +44,13 @@ public class VideoPlayerActivity extends BaseActivity {
             }
         }
     };
+    private SeekBar video_volume;
+    private AudioManager mAudioManager;
+    private ImageView iv_mute;
+    private int mCurrentVolume;
+    private float mStartY;
+    private int mStartVolume;
+
     @Override
     protected int layouId() {
         return R.layout.video_player;
@@ -55,6 +63,8 @@ public class VideoPlayerActivity extends BaseActivity {
         tv_title = findViewById(R.id.video_player_tv_tittle);
         iv_battery = findViewById(R.id.video_player_iv_battery);
         tv_system_time = findViewById(R.id.video_player_iv_time);
+        video_volume = findViewById(R.id.video_player_sk_volume);
+        iv_mute = findViewById(R.id.video_player_iv_mute);
     }
 
     @Override
@@ -67,8 +77,36 @@ public class VideoPlayerActivity extends BaseActivity {
         onVideoReceiver = new OnVideoReceiver();
         registerReceiver(onVideoReceiver,filter);
 
+        video_volume.setOnSeekBarChangeListener(new OnVideoSeekBarChangeListener());
+
+        iv_mute.setOnClickListener(this);
+
 
     }
+
+    private class OnVideoSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+        @Override
+        /**当进度值发生变更的时候被回调*/
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (!fromUser) {
+                //如果不是用户修改就不改变音量值得修改
+                return;
+            }
+            updateVolume(progress);
+        }
+        /*手指压倒seekbar上时回调*/
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+        /**当手指离开seekbar的时候回调*/
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    }
+
+
 
     private class OnVideoReceiver extends BroadcastReceiver {
         @Override
@@ -103,7 +141,7 @@ public class VideoPlayerActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(onVideoReceiver);
-        handler.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -119,12 +157,19 @@ public class VideoPlayerActivity extends BaseActivity {
 
         startUpdateSystemTime();
 
+        //初始化音量
+        mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        int currentVolume = getCurrentVolume();
+        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        video_volume.setMax(maxVolume);
+        video_volume.setProgress(currentVolume);
+
 
     }
     /**更新系统时间,并延迟一段时间之后再次更新*/
     private void startUpdateSystemTime() {
         tv_system_time.setText(StringUtils.formatSystemTime());
-        handler.sendEmptyMessageDelayed(MSG_UPDATE_SYSTEM_TIME,500);
+        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_SYSTEM_TIME,500);
     }
 
     @Override
@@ -133,9 +178,68 @@ public class VideoPlayerActivity extends BaseActivity {
             case R.id.video_playerview_vi_pause:
                 switchPauseStatus();
                 break;
+            case  R.id.video_player_iv_mute:
+                switchMuteStatus();
+                break;
         }
 
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                //记录手指压下去的数据
+                mStartY = event.getY();
+                mStartVolume = getCurrentVolume();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float moveY = event.getY();
+                //计算手指滑动的距离
+                float offSetY = moveY - mStartY;
+                //计算手指划过屏幕的百分比
+                int helfScreenH = getWindowManager().getDefaultDisplay().getHeight() /2;
+                float movePercent = offSetY / helfScreenH;
+                //计算要变化的音量
+                int offsetVolue = (int) (video_volume.getMax() * movePercent);
+                //计算最终要设置的音量
+                int finalVolume = mStartVolume +offsetVolue;
+                if (finalVolume> video_volume.getMax()) {
+                    finalVolume = video_volume.getMax();
+                } else if (finalVolume < 0){
+                    finalVolume = 0;
+                }
+                updateVolume(finalVolume);
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    /**更新声音的状态 如果音量不为0  则记录当前的音量 ,如果为0 则恢复音量之前的记录值*/
+    private void switchMuteStatus() {
+        if (getCurrentVolume() != 0) {
+            //非静音状态
+            mCurrentVolume = getCurrentVolume();
+            iv_mute.setImageResource(R.drawable.video_mute_selector);
+            updateVolume(0);
+        } else {
+            //静音状态
+            updateVolume(mCurrentVolume);
+        }
+
+    }
+
+    /**获取当前系统的音量*/
+    private int getCurrentVolume() {
+        return mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+    }
+
+    /**更新当前StreamVolume的音量为volume,并且更新音量控制条*/
+    private void updateVolume(int volume) {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume,1);
+        video_volume.setProgress(volume);
+    }
+
     /**切换视频的播放状态*/
     private void switchPauseStatus() {
         if (videoView.isPlaying()) {
@@ -166,6 +270,7 @@ public class VideoPlayerActivity extends BaseActivity {
             updatePauseBtn();
         }
     }
+
 
 
 }
