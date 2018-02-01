@@ -2,13 +2,15 @@ package com.musicplayer.ccl.music_player.bean;
 
 import android.database.Cursor;
 
+import java.io.Serializable;
+
 import static android.provider.MediaStore.Video.Media;
 
 /**
  * Created by ccl on 18-1-31.
  */
 
-public class VideoItem {
+public class VideoItem implements Serializable {
     private String title;
     private int duration;
     private int size;
@@ -56,5 +58,15 @@ public class VideoItem {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @Override
+    public String toString() {
+        return "VideoItem{" +
+                "title='" + title + '\'' +
+                ", duration=" + duration +
+                ", size=" + size +
+                ", path='" + path + '\'' +
+                '}';
     }
 }

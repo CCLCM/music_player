@@ -3,12 +3,15 @@ package com.musicplayer.ccl.music_player.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
+
+import utils.StringUtils;
 
 /**
  * Created by ccl on 18-1-31.
@@ -42,8 +45,8 @@ public class VideoListAdapter extends CursorAdapter {
         VideoItem videoItem = VideoItem.instanceFromCursor(cursor);
 
         holder.tv_title.setText(videoItem.getTitle());
-        holder.tv_duration.setText(videoItem.getDuration()+"");
-        holder.tv_size.setText(videoItem.getSize()+"");
+        holder.tv_duration.setText(StringUtils.formatDuration(videoItem.getDuration()));
+        holder.tv_size.setText(Formatter.formatFileSize(context,videoItem.getSize()));
 
     }
 

@@ -2,19 +2,21 @@ package com.musicplayer.ccl.music_player.ui.fragment;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+
+
+import android.content.Intent;
 import android.database.Cursor;
 import android.provider.MediaStore.Video.Media;
-import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.widget.Adapter;
 
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.ad.MobileAsyncQuerayHandler;
 import com.musicplayer.ccl.music_player.adapter.VideoListAdapter;
-
-import utils.CursorUtils;
+import com.musicplayer.ccl.music_player.bean.VideoItem;
+import com.musicplayer.ccl.music_player.ui.activity.VideoPlayerActivity;
 
 /**
  * Created by ccl on 18-1-31.
@@ -43,6 +45,23 @@ public class AudioListFragment extends BaseFragment {
     protected void initListener() {
         videoListAdapter = new VideoListAdapter(getActivity(),null);
         listView.setAdapter(videoListAdapter);
+        listView.setOnItemClickListener(new OnVideoItemClickListener());
+    }
+
+    private class OnVideoItemClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            //获取被点击的数据
+             Cursor mcursor = (Cursor) adapterView.getItemAtPosition(i);
+            VideoItem videoItem =VideoItem.instanceFromCursor(mcursor);
+
+            //跳转到播放界面
+
+            Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
+            intent.putExtra("videoItem",videoItem);
+            startActivity(intent);
+
+        }
     }
 
     @Override
@@ -68,4 +87,6 @@ public class AudioListFragment extends BaseFragment {
     protected void processClick(View view) {
 
     }
+
+
 }
