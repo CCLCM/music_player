@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.musicplayer.ccl.music_player.R;
@@ -19,6 +20,7 @@ public class VideoPlayerActivity extends BaseActivity {
 
     private VideoView videoView;
     private ImageView iv_pause;
+    private TextView tv_title;
 
     @Override
     protected int layouId() {
@@ -29,6 +31,7 @@ public class VideoPlayerActivity extends BaseActivity {
     protected void initView() {
         videoView = (VideoView) findViewById(R.id.video_playerview);
         iv_pause = findViewById(R.id.video_playerview_vi_pause);
+        tv_title = findViewById(R.id.video_player_tv_tittle);
     }
 
     @Override
@@ -44,6 +47,9 @@ public class VideoPlayerActivity extends BaseActivity {
         VideoItem videoItem = (VideoItem) getIntent().getSerializableExtra("videoItem");
        // LogUtils.e(getClass(),""+videoItem);
         videoView.setVideoPath(videoItem.getPath());
+        tv_title.setText(videoItem.getTitle());
+
+
         //系统自带进度条
         //videoView.setMediaController(new MediaController(this));
 
