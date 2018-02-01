@@ -1,5 +1,8 @@
 package utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by ccl on 18-2-1.
  */
@@ -27,6 +30,16 @@ public class StringUtils {
         }
 
         return time;
+
+    }
+
+
+    //格式时间为 01:01:01
+    public static String formatSystemTime() {
+        String time = null;
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+        return format.format(new Date());
+
 
     }
 }
