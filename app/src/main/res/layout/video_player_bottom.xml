@@ -71,9 +71,10 @@
         <!--暂停按钮-->
 
         <ImageView
+            android:id="@+id/video_playerview_vi_pause"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/video_pause_selector"
+            android:src="@drawable/video_play_selector"
             android:layout_height="wrap_content" />
 
         <!--下一曲-->

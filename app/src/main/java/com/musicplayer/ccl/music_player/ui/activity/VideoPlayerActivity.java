@@ -2,6 +2,7 @@ package com.musicplayer.ccl.music_player.ui.activity;
 
 import android.media.MediaPlayer;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -17,6 +18,7 @@ import utils.LogUtils;
 public class VideoPlayerActivity extends BaseActivity {
 
     private VideoView videoView;
+    private ImageView iv_pause;
 
     @Override
     protected int layouId() {
@@ -26,11 +28,12 @@ public class VideoPlayerActivity extends BaseActivity {
     @Override
     protected void initView() {
         videoView = (VideoView) findViewById(R.id.video_playerview);
+        iv_pause = findViewById(R.id.video_playerview_vi_pause);
     }
 
     @Override
     protected void initListener() {
-
+        iv_pause.setOnClickListener(this);
         videoView.setOnPreparedListener(new OnVideoPreparedListener());
 
 
@@ -49,6 +52,33 @@ public class VideoPlayerActivity extends BaseActivity {
 
     @Override
     protected void processClick(View view) {
+        switch (view.getId()){
+            case R.id.video_playerview_vi_pause:
+                switchPauseStatus();
+                break;
+        }
+
+    }
+    /**切换视频的播放状态*/
+    private void switchPauseStatus() {
+        if (videoView.isPlaying()) {
+            videoView.pause();
+        } else {
+            videoView.start();
+        }
+
+        updatePauseBtn();
+
+    }
+
+   /**更新按钮暂停的图片*/
+    private void updatePauseBtn() {
+
+        if (videoView.isPlaying()) {
+            iv_pause.setImageResource(R.drawable.video_pause_selector);
+        } else {
+            iv_pause.setImageResource(R.drawable.video_play_selector);
+        }
 
     }
 
@@ -56,6 +86,7 @@ public class VideoPlayerActivity extends BaseActivity {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
             videoView.start();
+            updatePauseBtn();
         }
     }
 }
