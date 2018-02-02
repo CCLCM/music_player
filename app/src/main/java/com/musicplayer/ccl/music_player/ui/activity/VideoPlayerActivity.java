@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.view.GestureDetector;
@@ -274,10 +275,19 @@ public class VideoPlayerActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        mVideoItems = (ArrayList<VideoItem>) getIntent().getSerializableExtra("videoItems");
-        mPosition = getIntent().getIntExtra("position",-1);
-        playItem();
-
+        Uri uri = getIntent().getData();
+        if (uri != null) {
+            //从外部调用
+            videoView.setVideoURI(uri);
+            tv_title.setText(uri.getPath());
+            iv_next.setEnabled(false);
+            iv_pre.setEnabled(false);
+        } else {
+            //从内部调用
+            mVideoItems = (ArrayList<VideoItem>) getIntent().getSerializableExtra("videoItems");
+            mPosition = getIntent().getIntExtra("position",-1);
+            playItem();
+        }
 
         //系统自带进度条
         //videoView.setMediaController(new MediaController(this));
