@@ -17,6 +17,7 @@ import android.widget.VideoView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
+import com.nineoldandroids.view.ViewHelper;
 
 
 import utils.StringUtils;
@@ -50,6 +51,8 @@ public class VideoPlayerActivity extends BaseActivity {
     private int mCurrentVolume;
     private float mStartY;
     private int mStartVolume;
+    private View alpha_cover;
+    private float mStartAlpha;
 
     @Override
     protected int layouId() {
@@ -65,6 +68,7 @@ public class VideoPlayerActivity extends BaseActivity {
         tv_system_time = findViewById(R.id.video_player_iv_time);
         video_volume = findViewById(R.id.video_player_sk_volume);
         iv_mute = findViewById(R.id.video_player_iv_mute);
+        alpha_cover = findViewById(R.id.video_player_alpha_cover);
     }
 
     @Override
@@ -164,6 +168,8 @@ public class VideoPlayerActivity extends BaseActivity {
         video_volume.setMax(maxVolume);
         video_volume.setProgress(currentVolume);
 
+        moveAlpha(0.5f);
+
 
     }
     /**更新系统时间,并延迟一段时间之后再次更新*/
@@ -192,6 +198,7 @@ public class VideoPlayerActivity extends BaseActivity {
                 //记录手指压下去的数据
                 mStartY = event.getY();
                 mStartVolume = getCurrentVolume();
+                mStartAlpha = ViewHelper.getAlpha(alpha_cover);
                 break;
             case MotionEvent.ACTION_MOVE:
                 float moveY = event.getY();
@@ -199,20 +206,47 @@ public class VideoPlayerActivity extends BaseActivity {
                 float offSetY = moveY - mStartY;
                 //计算手指划过屏幕的百分比
                 int helfScreenH = getWindowManager().getDefaultDisplay().getHeight() /2;
+                int helfScreenW = getWindowManager().getDefaultDisplay().getWidth() /2;
                 float movePercent = offSetY / helfScreenH;
-                //计算要变化的音量
-                int offsetVolue = (int) (video_volume.getMax() * movePercent);
-                //计算最终要设置的音量
-                int finalVolume = mStartVolume +offsetVolue;
-                if (finalVolume> video_volume.getMax()) {
-                    finalVolume = video_volume.getMax();
-                } else if (finalVolume < 0){
-                    finalVolume = 0;
+
+                //在屏幕的左半步修改显示 在屏幕的有半侧修改音量值
+                if (event.getX()< helfScreenW){
+                    //修改屏幕的亮度
+                    moveAlpha(movePercent);
+                } else {
+                    //修改音量键
+                    moveVolume(movePercent);
+
                 }
-                updateVolume(finalVolume);
                 break;
         }
         return super.onTouchEvent(event);
+    }
+
+    private void moveAlpha(float movePercent) {
+
+        float finalAlpha = mStartAlpha + movePercent;
+        if (finalAlpha > 1) {
+            finalAlpha = 1;
+        } else if (finalAlpha <0) {
+            finalAlpha = 0;
+        }
+        ViewHelper.setAlpha(alpha_cover,finalAlpha);
+
+    }
+
+    /*根据手指划过的距离修改音量键*/
+    private void moveVolume(float movePercent) {
+        //计算要变化的音量
+        int offsetVolue = (int) (video_volume.getMax() * movePercent);
+        //计算最终要设置的音量
+        int finalVolume = mStartVolume +offsetVolue;
+        if (finalVolume> video_volume.getMax()) {
+            finalVolume = video_volume.getMax();
+        } else if (finalVolume < 0){
+            finalVolume = 0;
+        }
+        updateVolume(finalVolume);
     }
 
     /**更新声音的状态 如果音量不为0  则记录当前的音量 ,如果为0 则恢复音量之前的记录值*/
