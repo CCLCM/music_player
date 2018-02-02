@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.adapter.MainPagerAdapter;
-import com.musicplayer.ccl.music_player.ui.fragment.MusicListFragment;
+import com.musicplayer.ccl.music_player.ui.fragment.AduioListFragment;
 import com.musicplayer.ccl.music_player.ui.fragment.VideoListFragment;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity {
     private View mainIndicateLine;
     private int screenWidth;
     private VideoListFragment audioListFragment;
-    private MusicListFragment musicListFragment;
+    private AduioListFragment musicListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initData() {
         audioListFragment = new VideoListFragment();
-        musicListFragment = new MusicListFragment();
+        musicListFragment = new AduioListFragment();
         mFragments.add(audioListFragment);
         mFragments.add(musicListFragment);
         mAdapter.notifyDataSetChanged();

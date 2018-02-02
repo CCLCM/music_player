@@ -39,7 +39,10 @@ public class StringUtils {
         String time = null;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         return format.format(new Date());
+    }
 
-
+    //格式dislayName 的文件名的后缀
+    public static String formatDisplyName(String dislayName) {
+        return dislayName.substring(0,dislayName.indexOf("."));
     }
 }

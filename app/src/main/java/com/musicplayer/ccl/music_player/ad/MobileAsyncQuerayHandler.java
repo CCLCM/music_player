@@ -16,7 +16,7 @@ public class MobileAsyncQuerayHandler extends AsyncQueryHandler {
 
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-        CursorAdapter videoAdapter = (CursorAdapter) cookie;
-        videoAdapter.swapCursor(cursor);
+        CursorAdapter adapter = (CursorAdapter) cookie;
+        adapter.swapCursor(cursor);
     }
 }
