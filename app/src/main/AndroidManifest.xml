@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.musicplayer.ccl.music_player">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -65,11 +66,12 @@
                 <data android:scheme="rtsp" />
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="video/*" />
-                <data android:mimeType="application/sdp" />
+            <intent-filter android:scheme="http"
+                tools:ignore="AppLinkUrlError">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="video/*" />
+            <data android:mimeType="application/sdp" />
             </intent-filter>
 
             <intent-filter>
@@ -83,6 +85,9 @@
                 <data android:mimeType="video/3gpp2" />
             </intent-filter>
 
+
+        </activity>
+        <activity android:name="com.musicplayer.ccl.music_player.ui.activity.AudioPlayerActivity">
 
         </activity>
 
