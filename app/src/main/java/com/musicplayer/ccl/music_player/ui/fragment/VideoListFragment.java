@@ -17,6 +17,7 @@ import com.musicplayer.ccl.music_player.ad.MobileAsyncQuerayHandler;
 import com.musicplayer.ccl.music_player.adapter.VideoListAdapter;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
 import com.musicplayer.ccl.music_player.ui.activity.VideoPlayerActivity;
+import com.musicplayer.ccl.music_player.ui.activity.VitamioPlayerActivity;
 
 import java.util.ArrayList;
 
@@ -59,7 +60,8 @@ public class VideoListFragment extends BaseFragment {
             ArrayList<VideoItem> videoItems = VideoItem.instanceListFromCursor(mcursor);
             //跳转到播放界面
 
-            Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
+//            Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
+            Intent intent = new Intent(getActivity(), VitamioPlayerActivity.class);
 //            intent.putExtra("videoItem",videoItem);
             intent.putExtra("videoItems",videoItems);
             intent.putExtra("position",i);
