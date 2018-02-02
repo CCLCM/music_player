@@ -3,5 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/base_bg">
-
+    <!--标题栏-->
+    <include layout="@layout/audio_player_top"></include>
+    <!--歌曲信息-->
+    <include layout="@layout/audio_player_middle"></include>
+    <!--控制面板-->
+    <include layout="@layout/audio_player_bottom"></include>
 </LinearLayout>
