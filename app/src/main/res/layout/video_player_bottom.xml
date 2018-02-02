@@ -96,6 +96,7 @@
         <!--全屏-->
 
         <ImageView
+            android:id="@+id/video_player_iv_fullscreen"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:src="@drawable/video_fullscreen_selector"

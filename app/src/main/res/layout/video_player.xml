@@ -3,7 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--视频播放模块-->
-    <VideoView
+    <com.musicplayer.ccl.music_player.view.VideoView
+        android:layout_centerInParent="true"
         android:id="@+id/video_playerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

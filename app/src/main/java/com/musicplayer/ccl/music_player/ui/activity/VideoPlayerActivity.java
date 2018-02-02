@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.VideoView;
+import com.musicplayer.ccl.music_player.view.VideoView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
@@ -83,6 +83,7 @@ public class VideoPlayerActivity extends BaseActivity {
     private LinearLayout ll_bottom;
     private GestureDetector gestureDetector;
     private boolean isShowControlor;
+    private ImageView iv_fullscreen;
 
     @Override
     protected int layouId() {
@@ -106,6 +107,7 @@ public class VideoPlayerActivity extends BaseActivity {
         iv_next = findViewById(R.id.video_player_iv_next);
         ll_top = findViewById(R.id.video_player_ll_top);
         ll_bottom = findViewById(R.id.video_player_ll_bottom);
+        iv_fullscreen = findViewById(R.id.video_player_iv_fullscreen);
 
     }
 
@@ -131,7 +133,7 @@ public class VideoPlayerActivity extends BaseActivity {
         iv_next.setOnClickListener(this);
 
         gestureDetector = new GestureDetector(this, new OnVIdeoGestureListener());
-
+        iv_fullscreen.setOnClickListener(this);
     }
 
 
@@ -333,8 +335,26 @@ public class VideoPlayerActivity extends BaseActivity {
             case R.id.video_player_iv_next:
                 playNext();
                 break;
+            case R.id.video_player_iv_fullscreen:
+                switchFullScreen();
+                break;
         }
 
+    }
+
+    /**全屏的切换的默认比例*/
+    private void switchFullScreen() {
+        updateFullScreenBtn();
+        videoView.switchFullscreen();
+    }
+
+    /**更新全屏按钮切换的图片*/
+    private void updateFullScreenBtn() {
+        if (videoView.isFullScreen()) {
+            iv_fullscreen.setImageResource(R.drawable.video_fullscreen_selector);
+        } else {
+            iv_fullscreen.setImageResource(R.drawable.video_defaultscreen_selector);
+        }
     }
 
     /*播放下一个视频*/
