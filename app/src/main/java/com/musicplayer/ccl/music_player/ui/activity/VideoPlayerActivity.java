@@ -8,9 +8,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -18,10 +21,12 @@ import android.widget.VideoView;
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
 import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 
 
 import java.util.ArrayList;
 
+import utils.LogUtils;
 import utils.StringUtils;
 
 /**
@@ -38,15 +43,23 @@ public class VideoPlayerActivity extends BaseActivity {
     private TextView tv_system_time;
     private static final int MSG_UPDATE_SYSTEM_TIME =0;
     private static final int MSG_UPDATE_POSION =1;
+    private static final int MSG_HIDE_CONTROLOR =2;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_UPDATE_SYSTEM_TIME:
+                    LogUtils.e("","MSG_UPDATE_SYSTEM_TIME");
                     startUpdateSystemTime();
                     break;
                 case MSG_UPDATE_POSION:
+                    LogUtils.e("","MSG_UPDATE_POSION");
                     startUpdatePosion();
+                    break;
+                case MSG_HIDE_CONTROLOR:
+                    LogUtils.e("","MSG_HIDE_CONTROLOR");
+                    hideControl();
+                    break;
             }
         }
     };
@@ -66,6 +79,10 @@ public class VideoPlayerActivity extends BaseActivity {
     private ImageView iv_next;
     private ArrayList<VideoItem> mVideoItems;
     private int mPosition;
+    private LinearLayout ll_top;
+    private LinearLayout ll_bottom;
+    private GestureDetector gestureDetector;
+    private boolean isShowControlor;
 
     @Override
     protected int layouId() {
@@ -87,6 +104,8 @@ public class VideoPlayerActivity extends BaseActivity {
         iv_pause = findViewById(R.id.video_playerview_vi_pause);
         iv_pre = findViewById(R.id.video_player_iv_pre);
         iv_next = findViewById(R.id.video_player_iv_next);
+        ll_top = findViewById(R.id.video_player_ll_top);
+        ll_bottom = findViewById(R.id.video_player_ll_bottom);
 
     }
 
@@ -110,6 +129,50 @@ public class VideoPlayerActivity extends BaseActivity {
         sk_posion.setOnSeekBarChangeListener(onSeekBarChangeListener);
         iv_pre.setOnClickListener(this);
         iv_next.setOnClickListener(this);
+
+        gestureDetector = new GestureDetector(this, new OnVIdeoGestureListener());
+
+    }
+
+
+    private class OnVIdeoGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            //
+            return super.onSingleTapUp(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            switchControlor();
+            LogUtils.e("onSingleTapConfirmed","----onSingleTapConfirmed");
+            return super.onSingleTapConfirmed(e);
+        }
+    }
+    /**显示或隐藏控制面板*/
+    private void switchControlor() {
+        if (isShowControlor){
+            //显示状态
+            hideControl();
+        } else {
+            //隐藏状态
+            showControlor();
+            notifyHideContralor();
+        }
+    }
+    /**显示控制面板*/
+    private void showControlor() {
+        ViewPropertyAnimator.animate(ll_top).translationY(0);
+        ViewPropertyAnimator.animate(ll_bottom).translationY(0);
+        isShowControlor = true;
+
+    }
+    /**隐藏控制面板*/
+    private void hideControl() {
+        ViewPropertyAnimator.animate(ll_top).translationY(-ll_top.getHeight());
+        ViewPropertyAnimator.animate(ll_bottom).translationY(ll_bottom.getHeight());
+        isShowControlor = false;
 
     }
 
@@ -151,15 +214,18 @@ public class VideoPlayerActivity extends BaseActivity {
         /*手指压倒seekbar上时回调*/
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
+            mHandler.removeMessages(MSG_HIDE_CONTROLOR);
         }
         /**当手指离开seekbar的时候回调*/
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
+            notifyHideContralor();
         }
     }
-
+    /**通知隐藏控制显示面板*/
+    private boolean notifyHideContralor() {
+        return mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLOR,5000);
+    }
 
 
     private class OnVideoReceiver extends BroadcastReceiver {
@@ -219,6 +285,29 @@ public class VideoPlayerActivity extends BaseActivity {
 
         moveAlpha(0.3f);
 
+
+        //隐藏控制面板
+        initHideControl();
+
+
+    }
+    /*初始化的时候将控制面板隐藏*/
+    private void initHideControl() {
+        //使用getMeasureHeight 获取高度
+        ll_top.measure(0,0);
+        int h = ll_top.getMeasuredHeight();
+        ViewPropertyAnimator.animate(ll_top).translationY(-ll_top.getMeasuredHeight());
+
+        //LogUtils.e(getClass()," HH  " +h);
+        ll_bottom.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ll_bottom.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                ViewPropertyAnimator.animate(ll_bottom).translationY(ll_bottom.getHeight());
+            }
+        });
+
+        isShowControlor = false;
 
     }
 
@@ -290,8 +379,10 @@ public class VideoPlayerActivity extends BaseActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
+                mHandler.removeMessages(MSG_HIDE_CONTROLOR);
                 //记录手指压下去的数据
                 mStartY = event.getY();
                 mStartVolume = getCurrentVolume();
@@ -315,6 +406,9 @@ public class VideoPlayerActivity extends BaseActivity {
                     moveVolume(movePercent);
 
                 }
+                break;
+            case MotionEvent.ACTION_UP:
+                mHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLOR,5000);
                 break;
         }
         return super.onTouchEvent(event);
@@ -422,6 +516,7 @@ public class VideoPlayerActivity extends BaseActivity {
         tv_posion.setText(StringUtils.formatDuration(position));
         sk_posion.setProgress(position);
     }
+
 
 
 }
