@@ -59,6 +59,7 @@ public class VideoPlayerActivity extends BaseActivity {
     private TextView tv_posion;
     private TextView tv_duration;
     private SeekBar sk_posion;
+    private OnVideoSeekBarChangeListener onSeekBarChangeListener;
 
     @Override
     protected int layouId() {
@@ -86,16 +87,37 @@ public class VideoPlayerActivity extends BaseActivity {
         iv_pause.setOnClickListener(this);
         videoView.setOnPreparedListener(new OnVideoPreparedListener());
 
+        videoView.setOnCompletionListener(new OnVideoCompletionListener());
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
 
         onVideoReceiver = new OnVideoReceiver();
         registerReceiver(onVideoReceiver,filter);
 
-        video_volume.setOnSeekBarChangeListener(new OnVideoSeekBarChangeListener());
+        onSeekBarChangeListener = new OnVideoSeekBarChangeListener();
+        video_volume.setOnSeekBarChangeListener(onSeekBarChangeListener);
 
         iv_mute.setOnClickListener(this);
 
+        sk_posion.setOnSeekBarChangeListener(onSeekBarChangeListener);
 
+
+    }
+
+    /**视频播放完成进行监听*/
+    private class OnVideoCompletionListener implements MediaPlayer.OnCompletionListener {
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            //视频播放结束
+
+            //为了避开系统错误,播放技术后主动更新一下已经播放时间
+            mHandler.removeMessages(MSG_UPDATE_POSION);
+            updatePosion(videoView.getDuration());
+
+            //更新已经播放的按钮
+            updatePauseBtn();
+
+        }
     }
 
     private class OnVideoSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
@@ -106,7 +128,16 @@ public class VideoPlayerActivity extends BaseActivity {
                 //如果不是用户修改就不改变音量值得修改
                 return;
             }
-            updateVolume(progress);
+            switch (seekBar.getId()){
+                case R.id.video_player_sk_volume:
+                    updateVolume(progress);
+                    break;
+                case R.id.video_player_sk_posion:
+                    videoView.seekTo(progress);
+                    updatePosion(progress);
+                    break;
+            }
+
         }
         /*手指压倒seekbar上时回调*/
         @Override
@@ -301,8 +332,10 @@ public class VideoPlayerActivity extends BaseActivity {
 
         if (videoView.isPlaying()) {
             iv_pause.setImageResource(R.drawable.video_pause_selector);
+            startUpdatePosion();
         } else {
             iv_pause.setImageResource(R.drawable.video_play_selector);
+            mHandler.removeMessages(MSG_UPDATE_POSION);
         }
 
     }
@@ -317,14 +350,21 @@ public class VideoPlayerActivity extends BaseActivity {
 
             int duration = videoView.getDuration();
             tv_duration.setText(StringUtils.formatDuration(duration));
+            sk_posion.setMax(duration);
             startUpdatePosion();
+
         }
     }
     /*更新已经播放的时间*/
     private void startUpdatePosion() {
         int position = videoView.getCurrentPosition();
-        tv_posion.setText(StringUtils.formatDuration(position));
+        updatePosion(position);
         mHandler.sendEmptyMessageDelayed(MSG_UPDATE_POSION,500);
+    }
+
+    private void updatePosion(int position) {
+        tv_posion.setText(StringUtils.formatDuration(position));
+        sk_posion.setProgress(position);
     }
 
 

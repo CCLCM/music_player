@@ -23,6 +23,7 @@
 
         <!--时间进度-->
         <SeekBar
+            android:paddingRight="-2dp"
             android:id="@+id/video_player_sk_posion"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
