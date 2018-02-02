@@ -1,1 +1,1 @@
-include ':app', ':netvideosender'
+include ':app'
