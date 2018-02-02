@@ -33,7 +33,7 @@ public class VideoListAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         //创建新的view
-        View view = View.inflate(context, R.layout.main_audio_list_item,null);
+        View view = View.inflate(context, R.layout.main_video_list_item,null);
         view.setTag(new ViewHolder(view));
         return view;
     }

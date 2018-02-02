@@ -50,7 +50,7 @@ public abstract class  BaseActivity extends FragmentActivity implements View.OnC
     /**初始数据*/
     protected abstract void initData();
 
-    protected abstract void processClick( View view);
+    protected abstract void processClick(View view);
     @Override
     public void onClick(View view) {
         switch (view.getId()) {

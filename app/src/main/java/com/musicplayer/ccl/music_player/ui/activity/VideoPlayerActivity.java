@@ -20,6 +20,8 @@ import com.musicplayer.ccl.music_player.bean.VideoItem;
 import com.nineoldandroids.view.ViewHelper;
 
 
+import java.util.ArrayList;
+
 import utils.StringUtils;
 
 /**
@@ -60,6 +62,10 @@ public class VideoPlayerActivity extends BaseActivity {
     private TextView tv_duration;
     private SeekBar sk_posion;
     private OnVideoSeekBarChangeListener onSeekBarChangeListener;
+    private ImageView iv_pre;
+    private ImageView iv_next;
+    private ArrayList<VideoItem> mVideoItems;
+    private int mPosition;
 
     @Override
     protected int layouId() {
@@ -79,6 +85,8 @@ public class VideoPlayerActivity extends BaseActivity {
         tv_duration = findViewById(R.id.video_player_tv_duration);
         sk_posion = findViewById(R.id.video_player_sk_posion);
         iv_pause = findViewById(R.id.video_playerview_vi_pause);
+        iv_pre = findViewById(R.id.video_player_iv_pre);
+        iv_next = findViewById(R.id.video_player_iv_next);
 
     }
 
@@ -100,7 +108,8 @@ public class VideoPlayerActivity extends BaseActivity {
         iv_mute.setOnClickListener(this);
 
         sk_posion.setOnSeekBarChangeListener(onSeekBarChangeListener);
-
+        iv_pre.setOnClickListener(this);
+        iv_next.setOnClickListener(this);
 
     }
 
@@ -191,10 +200,9 @@ public class VideoPlayerActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        VideoItem videoItem = (VideoItem) getIntent().getSerializableExtra("videoItem");
-       // LogUtils.e(getClass(),""+videoItem);
-        videoView.setVideoPath(videoItem.getPath());
-        tv_title.setText(videoItem.getTitle());
+        mVideoItems = (ArrayList<VideoItem>) getIntent().getSerializableExtra("videoItems");
+        mPosition = getIntent().getIntExtra("position",-1);
+        playItem();
 
 
         //系统自带进度条
@@ -213,6 +221,8 @@ public class VideoPlayerActivity extends BaseActivity {
 
 
     }
+
+
     /**更新系统时间,并延迟一段时间之后再次更新*/
     private void startUpdateSystemTime() {
         tv_system_time.setText(StringUtils.formatSystemTime());
@@ -228,9 +238,55 @@ public class VideoPlayerActivity extends BaseActivity {
             case  R.id.video_player_iv_mute:
                 switchMuteStatus();
                 break;
+            case R.id.video_player_iv_pre:
+                playPre();
+                break;
+            case R.id.video_player_iv_next:
+                playNext();
+                break;
         }
 
     }
+
+    /*播放下一个视频*/
+    private void playPre() {
+        if (mPosition != 0) {
+            mPosition--;
+            playItem();
+        }
+    }
+
+
+    /*播放上一个视频*/
+    private void playNext() {
+        if (mPosition != mVideoItems.size() - 1) {
+            mPosition++;
+            playItem();
+        }
+    }
+
+    /**更新到前一个视频和后一个视频时候的使用的图片*/
+    private void updatePreAndNextBtn() {
+        iv_pre.setEnabled(mPosition != 0);
+        iv_next.setEnabled(mPosition != mVideoItems.size()-1);
+
+    }
+
+    /*播放当前mPosion 选中的视频*/
+    private void playItem() {
+        if (mVideoItems == null || mVideoItems.size() ==0 || mPosition ==-1){
+            return;
+        }
+
+//        VideoItem videoItem = (VideoItem) getIntent().getSerializableExtra("videoItem");
+        // LogUtils.e(getClass(),""+videoItem);
+
+        VideoItem videoItem = mVideoItems.get(mPosition);
+        videoView.setVideoPath(videoItem.getPath());
+        tv_title.setText(videoItem.getTitle());
+        updatePreAndNextBtn();
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

@@ -18,11 +18,13 @@ import com.musicplayer.ccl.music_player.adapter.VideoListAdapter;
 import com.musicplayer.ccl.music_player.bean.VideoItem;
 import com.musicplayer.ccl.music_player.ui.activity.VideoPlayerActivity;
 
+import java.util.ArrayList;
+
 /**
  * Created by ccl on 18-1-31.
  */
 
-public class AudioListFragment extends BaseFragment {
+public class VideoListFragment extends BaseFragment {
 
     private ListView listView;
     private Cursor cursor;
@@ -30,7 +32,7 @@ public class AudioListFragment extends BaseFragment {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.main_audio_list;
+        return R.layout.main_video_list;
     }
 
     @Override
@@ -53,12 +55,14 @@ public class AudioListFragment extends BaseFragment {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             //获取被点击的数据
              Cursor mcursor = (Cursor) adapterView.getItemAtPosition(i);
-            VideoItem videoItem =VideoItem.instanceFromCursor(mcursor);
-
+            //VideoItem videoItem =VideoItem.instanceFromCursor(mcursor);
+            ArrayList<VideoItem> videoItems = VideoItem.instanceListFromCursor(mcursor);
             //跳转到播放界面
 
             Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
-            intent.putExtra("videoItem",videoItem);
+//            intent.putExtra("videoItem",videoItem);
+            intent.putExtra("videoItems",videoItems);
+            intent.putExtra("position",i);
             startActivity(intent);
 
         }
