@@ -140,16 +140,22 @@ public class VideoPlayerActivity extends BaseActivity {
     private class OnVIdeoGestureListener extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            //
-            return super.onSingleTapUp(e);
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            switchControlor();
+            return super.onSingleTapConfirmed(e);
         }
 
         @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            switchControlor();
-            LogUtils.e("onSingleTapConfirmed","----onSingleTapConfirmed");
-            return super.onSingleTapConfirmed(e);
+        public boolean onDoubleTap(MotionEvent e) {
+            //双击事件
+            switchFullScreen();
+            return super.onDoubleTap(e);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            switchPauseStatus();
+            super.onLongPress(e);
         }
     }
     /**显示或隐藏控制面板*/
