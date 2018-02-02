@@ -2,6 +2,7 @@ package com.musicplayer.ccl.music_player.ui.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -9,12 +10,14 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.musicplayer.ccl.music_player.view.VideoView;
@@ -85,6 +88,8 @@ public class VideoPlayerActivity extends BaseActivity {
     private GestureDetector gestureDetector;
     private boolean isShowControlor;
     private ImageView iv_fullscreen;
+    private LinearLayout ll_loding;
+    private ProgressBar pd_buffering;
 
     @Override
     protected int layouId() {
@@ -109,7 +114,8 @@ public class VideoPlayerActivity extends BaseActivity {
         ll_top = findViewById(R.id.video_player_ll_top);
         ll_bottom = findViewById(R.id.video_player_ll_bottom);
         iv_fullscreen = findViewById(R.id.video_player_iv_fullscreen);
-
+        ll_loding = findViewById(R.id.video_player_ll_loding_cover);
+        pd_buffering = findViewById(R.id.video_player_pd_buffering);
     }
 
     @Override
@@ -135,6 +141,67 @@ public class VideoPlayerActivity extends BaseActivity {
 
         gestureDetector = new GestureDetector(this, new OnVIdeoGestureListener());
         iv_fullscreen.setOnClickListener(this);
+        videoView.setOnBufferingUpdateListener(new OnVideoBufferingUpdateListener());
+
+        videoView.setOnInfoListener(new OnVideoInfoListener());
+        videoView.setOnErrorListener(new OnVideoErrorListener());
+    }
+
+    private  class OnVideoInfoListener implements MediaPlayer.OnInfoListener {
+        @Override
+        public boolean onInfo(MediaPlayer mediaPlayer, int i, int i1) {
+            switch (i) {
+                case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                    pd_buffering.setVisibility(View.VISIBLE);
+                    break;
+                case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                    pd_buffering.setVisibility(View.GONE);
+                    break;
+            }
+            return false;
+        }
+    }
+
+    private class OnVideoErrorListener implements MediaPlayer.OnErrorListener {
+        @Override
+        public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("该视频无法播放");
+            builder.setPositiveButton("退出播放", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                }
+            });
+
+            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
+                }
+            });
+            builder.show();
+
+            return false;
+        }
+    }
+
+
+    private class OnVideoBufferingUpdateListener implements MediaPlayer.OnBufferingUpdateListener {
+        @Override
+        public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+
+            //计算换从百分百
+            float bufferPercent = i / 100f;
+
+            //计算一下缓冲了多少长度
+            int bufferTIme = (int) (bufferPercent * sk_posion.getMax());
+
+            //更新第二进度条
+            sk_posion.setSecondaryProgress(bufferTIme);
+        }
     }
 
 
@@ -275,6 +342,9 @@ public class VideoPlayerActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+        //显示加载遮罩
+        ll_loding.setVisibility(View.VISIBLE);
+
         Uri uri = getIntent().getData();
         if (uri != null) {
             //从外部调用
@@ -529,6 +599,7 @@ public class VideoPlayerActivity extends BaseActivity {
     private class OnVideoPreparedListener implements MediaPlayer.OnPreparedListener {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
+            ll_loding.setVisibility(View.GONE);
             videoView.start();
             updatePauseBtn();
 
@@ -552,7 +623,6 @@ public class VideoPlayerActivity extends BaseActivity {
         tv_posion.setText(StringUtils.formatDuration(position));
         sk_posion.setProgress(position);
     }
-
 
 
 }
