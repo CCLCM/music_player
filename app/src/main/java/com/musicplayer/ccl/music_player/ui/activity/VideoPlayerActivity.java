@@ -35,6 +35,7 @@ public class VideoPlayerActivity extends BaseActivity {
     private ImageView iv_battery;
     private TextView tv_system_time;
     private static final int MSG_UPDATE_SYSTEM_TIME =0;
+    private static final int MSG_UPDATE_POSION =1;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -42,6 +43,8 @@ public class VideoPlayerActivity extends BaseActivity {
                 case MSG_UPDATE_SYSTEM_TIME:
                     startUpdateSystemTime();
                     break;
+                case MSG_UPDATE_POSION:
+                    startUpdatePosion();
             }
         }
     };
@@ -53,6 +56,9 @@ public class VideoPlayerActivity extends BaseActivity {
     private int mStartVolume;
     private View alpha_cover;
     private float mStartAlpha;
+    private TextView tv_posion;
+    private TextView tv_duration;
+    private SeekBar sk_posion;
 
     @Override
     protected int layouId() {
@@ -62,13 +68,17 @@ public class VideoPlayerActivity extends BaseActivity {
     @Override
     protected void initView() {
         videoView = (VideoView) findViewById(R.id.video_playerview);
-        iv_pause = findViewById(R.id.video_playerview_vi_pause);
         tv_title = findViewById(R.id.video_player_tv_tittle);
         iv_battery = findViewById(R.id.video_player_iv_battery);
         tv_system_time = findViewById(R.id.video_player_iv_time);
         video_volume = findViewById(R.id.video_player_sk_volume);
         iv_mute = findViewById(R.id.video_player_iv_mute);
         alpha_cover = findViewById(R.id.video_player_alpha_cover);
+        tv_posion = findViewById(R.id.video_player_tv_posion);
+        tv_duration = findViewById(R.id.video_player_tv_duration);
+        sk_posion = findViewById(R.id.video_player_sk_posion);
+        iv_pause = findViewById(R.id.video_playerview_vi_pause);
+
     }
 
     @Override
@@ -168,7 +178,7 @@ public class VideoPlayerActivity extends BaseActivity {
         video_volume.setMax(maxVolume);
         video_volume.setProgress(currentVolume);
 
-        moveAlpha(0.5f);
+        moveAlpha(0.3f);
 
 
     }
@@ -270,7 +280,7 @@ public class VideoPlayerActivity extends BaseActivity {
 
     /**更新当前StreamVolume的音量为volume,并且更新音量控制条*/
     private void updateVolume(int volume) {
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume,1);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume,0);
         video_volume.setProgress(volume);
     }
 
@@ -302,9 +312,20 @@ public class VideoPlayerActivity extends BaseActivity {
         public void onPrepared(MediaPlayer mediaPlayer) {
             videoView.start();
             updatePauseBtn();
+
+            //更新播放进度
+
+            int duration = videoView.getDuration();
+            tv_duration.setText(StringUtils.formatDuration(duration));
+            startUpdatePosion();
         }
     }
-
+    /*更新已经播放的时间*/
+    private void startUpdatePosion() {
+        int position = videoView.getCurrentPosition();
+        tv_posion.setText(StringUtils.formatDuration(position));
+        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_POSION,500);
+    }
 
 
 }
