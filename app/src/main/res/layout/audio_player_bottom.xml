@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
+    <!--播放时间-->
+    <TextView
+        android:layout_margin="10dp"
+        android:layout_gravity="right"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:text="01:01/03:03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <!--播放进度条-->
+    <SeekBar
+        android:id="@+id/audio_player_sk_posion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:maxHeight="6dp"
+        android:minHeight="6dp"
+        android:paddingRight="-2dp"
+        android:progress="50"
+        android:progressDrawable="@drawable/audio_progress_drawable"
+        android:thumb="@drawable/audio_seek_thumb"
+        android:thumbOffset="0dp" />
+
+    <!--控制按钮栏目-->
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!--播放顺序-->
+        <ImageView
+            android:src="@drawable/audio_playmode_random_selector"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <!--上一曲-->
+        <ImageView
+            android:src="@drawable/audio_pre_selector"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <!--播放暂停-->
+        <ImageView
+            android:src="@drawable/audio_play_selector"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <!--下一曲-->
+        <ImageView
+            android:src="@drawable/audio_next_selector"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <!--播放列表-->
+        <ImageView
+            android:src="@drawable/audio_playlist_selector"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
 
 </LinearLayout>

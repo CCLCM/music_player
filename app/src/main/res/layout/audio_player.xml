@@ -6,7 +6,10 @@
     <!--标题栏-->
     <include layout="@layout/audio_player_top"></include>
     <!--歌曲信息-->
-    <include layout="@layout/audio_player_middle"></include>
+    <include layout="@layout/audio_player_middle"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"></include>
     <!--控制面板-->
     <include layout="@layout/audio_player_bottom"></include>
 </LinearLayout>
