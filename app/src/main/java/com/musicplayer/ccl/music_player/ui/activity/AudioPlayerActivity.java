@@ -150,10 +150,16 @@ public class AudioPlayerActivity extends BaseActivity {
         }
     }
 
-    private static class OnAudioSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+    /**进度条进行变更*/
+    private class OnAudioSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
+            if (!b){
+                return;
+            }
+            //跳转到指定的进度
+            mAudioServerBinder.seekTo(i);
+            updatePosition(i);
         }
 
         @Override
@@ -188,12 +194,16 @@ public class AudioPlayerActivity extends BaseActivity {
     /**更新播放进度 ,并延迟一段时间之后再更新*/
     private void startUpdatePosition() {
         int position = mAudioServerBinder.getCurrentPosition();
+        updatePosition(position);
+        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_POSITION,500);
+    }
+
+    private void updatePosition(int position) {
         int duration = mAudioServerBinder.getDuration();
         String positionStr = StringUtils.formatDuration(position);
         String durationStr = StringUtils.formatDuration(duration);
         tv_position.setText(positionStr+"/"+durationStr);
         sk_position.setProgress(position);
-        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_POSITION,500);
     }
 
 

@@ -106,6 +106,10 @@ public class AudioPlayerService extends Service {
             return mediaPlayer.getCurrentPosition();
         }
 
+        public void seekTo(int msec) {
+            mediaPlayer.seekTo(msec);
+        }
+
 
     }
 
