@@ -90,6 +90,7 @@
         <activity android:name="com.musicplayer.ccl.music_player.ui.activity.AudioPlayerActivity">
 
         </activity>
+        <service android:name="com.musicplayer.ccl.music_player.service.AudioPlayerService"></service>
 
     </application>
 
