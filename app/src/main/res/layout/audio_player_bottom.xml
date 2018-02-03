@@ -4,11 +4,12 @@
     android:layout_height="wrap_content">
     <!--播放时间-->
     <TextView
+        android:id="@+id/audio_player_tv_position"
         android:layout_margin="10dp"
         android:layout_gravity="right"
         android:textSize="18sp"
         android:textColor="@color/white"
-        android:text="01:01/03:03"
+        android:text="00:00/00:00"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <!--播放进度条-->
@@ -45,7 +46,7 @@
         <!--播放暂停-->
         <ImageView
             android:id="@+id/audio_player_iv_pause"
-            android:src="@drawable/audio_play_selector"
+            android:src="@drawable/audio_pause_selector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>

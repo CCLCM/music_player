@@ -72,7 +72,7 @@ public class AudioPlayerService extends Service {
 
 
         private MediaPlayer mediaPlayer;
-
+        /**播放*/
         public void play(){
             AudioItem audioItem = audioItems.get(mPostion);
             mediaPlayer = new MediaPlayer();
@@ -84,16 +84,26 @@ public class AudioPlayerService extends Service {
                 e.printStackTrace();
             }
         }
-
+        /**暂停*/
         public void pause(){
             mediaPlayer.pause();
         }
+        /**播放*/
         public void start(){
             mediaPlayer.start();
         }
-
+        /**播放的状态*/
         public boolean isPlaying(){
             return mediaPlayer.isPlaying();
+        }
+        /**返回当前歌曲的总时长*/
+        public int getDuration(){
+            return mediaPlayer.getDuration();
+        }
+
+        /**返回当前歌曲的播放进度*/
+        public int getCurrentPosition(){
+            return mediaPlayer.getCurrentPosition();
         }
 
 
