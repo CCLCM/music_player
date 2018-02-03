@@ -27,41 +27,43 @@
 
     <!--控制按钮栏目-->
     <LinearLayout
-        android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
         <!--播放顺序-->
         <ImageView
-            android:src="@drawable/audio_playmode_random_selector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/audio_playmode_random_selector" />
         <!--上一曲-->
         <ImageView
-            android:src="@drawable/audio_pre_selector"
+            android:id="@+id/audio_player_iv_pre"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/audio_pre_selector" />
         <!--播放暂停-->
         <ImageView
             android:id="@+id/audio_player_iv_pause"
-            android:src="@drawable/audio_pause_selector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/audio_pause_selector" />
         <!--下一曲-->
         <ImageView
-            android:src="@drawable/audio_next_selector"
+            android:id="@+id/audio_player_iv_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/audio_next_selector" />
         <!--播放列表-->
         <ImageView
-            android:src="@drawable/audio_playlist_selector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/audio_playlist_selector" />
 
     </LinearLayout>
 

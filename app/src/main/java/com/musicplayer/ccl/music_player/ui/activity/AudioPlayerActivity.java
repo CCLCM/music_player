@@ -54,6 +54,8 @@ public class AudioPlayerActivity extends BaseActivity {
         }
     };
     private SeekBar sk_position;
+    private ImageView iv_pre;
+    private ImageView iv_next;
 
     @Override
     protected int layouId() {
@@ -67,6 +69,9 @@ public class AudioPlayerActivity extends BaseActivity {
         iv_wave = findViewById(R.id.audio_player_iv_wave);
         tv_position = findViewById(R.id.audio_player_tv_position);
         sk_position = findViewById(R.id.audio_player_sk_posion);
+        iv_pre = findViewById(R.id.audio_player_iv_pre);
+        iv_next = findViewById(R.id.audio_player_iv_next);
+
 
         iv_pause = findViewById(R.id.audio_player_iv_pause);
 
@@ -84,6 +89,9 @@ public class AudioPlayerActivity extends BaseActivity {
         registerReceiver(onAudioEventReceiver, filter);
 
         sk_position.setOnSeekBarChangeListener(new OnAudioSeekBarChangeListener());
+
+        iv_pre.setOnClickListener(this);
+        iv_next.setOnClickListener(this);
 
     }
 
@@ -106,9 +114,25 @@ public class AudioPlayerActivity extends BaseActivity {
             case R.id.audio_player_iv_pause:
                 switchPauseStatus();
                 break;
+            case R.id.audio_player_iv_pre:
+                playPre();
+                break;
+            case R.id.audio_player_iv_next:
+                playNext();
+                break;
         }
 
     }
+    /**播放下一首歌*/
+    private void playNext() {
+        mAudioServerBinder.playNext();
+    }
+    /**播放上一首歌*/
+    private void playPre() {
+        mAudioServerBinder.playPre();
+
+    }
+
     /**切换播放状态并更新暂停按钮的图片*/
     private void switchPauseStatus() {
         if (mAudioServerBinder.isPlaying()) {

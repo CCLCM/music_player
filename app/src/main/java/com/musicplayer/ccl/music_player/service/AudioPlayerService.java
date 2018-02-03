@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.musicplayer.ccl.music_player.bean.AudioItem;
 
@@ -75,6 +76,11 @@ public class AudioPlayerService extends Service {
         /**播放*/
         public void play(){
             AudioItem audioItem = audioItems.get(mPostion);
+            /**如果有播放的歌曲则释放歌曲*/
+            if (mediaPlayer != null) {
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
             mediaPlayer = new MediaPlayer();
             try {
                 mediaPlayer.setDataSource(audioItem.getPath());
@@ -109,7 +115,25 @@ public class AudioPlayerService extends Service {
         public void seekTo(int msec) {
             mediaPlayer.seekTo(msec);
         }
+        /**播放上一首歌*/
+        public void playPre(){
+            if (mPostion != 0) {
+                mPostion--;
+                play();
+            } else {
+                Toast.makeText(AudioPlayerService.this,"已经是第一首歌曲",Toast.LENGTH_SHORT).show();
+            }
 
+        }
+        /**播放下一首歌*/
+        public void playNext(){
+            if (mPostion != audioItems.size()-1){
+                mPostion++;
+                play();
+            } else {
+                Toast.makeText(AudioPlayerService.this,"已经是最后一首歌曲",Toast.LENGTH_SHORT).show();
+            }
+        }
 
     }
 
