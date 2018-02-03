@@ -1,21 +1,24 @@
 package com.musicplayer.ccl.music_player.ui.activity;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.AudioItem;
 import com.musicplayer.ccl.music_player.service.AudioPlayerService;
-import com.musicplayer.ccl.music_player.ui.activity.BaseActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
+
+import utils.LogUtils;
 
 /**
  * Created by Administrator on 2018/2/2 0002.
@@ -28,6 +31,9 @@ public class AudioPlayerActivity extends BaseActivity {
     private ServiceAudioConnection mServerConnection;
     private static AudioPlayerService.AudioServiceBinder mAudioServerBinder;
     private ImageView iv_pause;
+    private OnAudioEventReceiver onAudioEventReceiver;
+    private TextView tv_tittle;
+    private TextView tv_arties;
 
     @Override
     protected int layouId() {
@@ -36,7 +42,11 @@ public class AudioPlayerActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        tv_tittle = findViewById(R.id.main_video_tv_title);
+        tv_arties = findViewById(R.id.audio_player_iv_arties);
+
         iv_pause = findViewById(R.id.audio_player_iv_pause);
+
 
 
     }
@@ -44,6 +54,11 @@ public class AudioPlayerActivity extends BaseActivity {
     @Override
     protected void initListener() {
         iv_pause.setOnClickListener(this);
+
+        //注册广播
+        IntentFilter filter = new IntentFilter("com.chencl.mobileplayer.audio_player");
+        onAudioEventReceiver = new OnAudioEventReceiver();
+        registerReceiver(onAudioEventReceiver, filter);
 
     }
 
@@ -60,13 +75,13 @@ public class AudioPlayerActivity extends BaseActivity {
     protected void processClick(View view) {
         switch (view.getId()){
             case R.id.audio_player_iv_pause:
-                wwitchPauseStatus();
+                switchPauseStatus();
                 break;
         }
 
     }
     /**切换播放状态并更新暂停按钮的图片*/
-    private void wwitchPauseStatus() {
+    private void switchPauseStatus() {
         if (mAudioServerBinder.isPlaying()) {
             mAudioServerBinder.pause();
         } else {
@@ -79,6 +94,7 @@ public class AudioPlayerActivity extends BaseActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mAudioServerBinder = (AudioPlayerService.AudioServiceBinder) iBinder;
+            mAudioServerBinder.play();
         }
 
         @Override
@@ -87,8 +103,20 @@ public class AudioPlayerActivity extends BaseActivity {
         }
     }
 
+    private class OnAudioEventReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            AudioItem audioItem = (AudioItem) intent.getSerializableExtra("audioitem");
+            tv_tittle.setText(audioItem.getTitle());
+            tv_arties.setText(audioItem.getArties());
+        }
+    }
+
+
     @Override
-    public void onDetachedFromWindow() {
+    protected void onDestroy() {
+        super.onDestroy();
         unbindService(mServerConnection);
+        unregisterReceiver(onAudioEventReceiver);
     }
 }

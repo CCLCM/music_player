@@ -56,6 +56,21 @@ public class AudioPlayerService extends Service {
 
     public class AudioServiceBinder extends Binder {
 
+
+        private class OnAudioPreparedListener implements MediaPlayer.OnPreparedListener {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                //音乐资源准备完成准备播放
+                mediaPlayer.start();
+                //获取当前正在播放的歌曲
+                AudioItem  audioitem = audioItems.get(mPostion);
+                Intent intent = new Intent("com.chencl.mobileplayer.audio_player");
+                intent.putExtra("audioitem",audioitem);
+                sendBroadcast(intent);
+            }
+        }
+
+
         private MediaPlayer mediaPlayer;
 
         public void play(){
@@ -63,8 +78,8 @@ public class AudioPlayerService extends Service {
             mediaPlayer = new MediaPlayer();
             try {
                 mediaPlayer.setDataSource(audioItem.getPath());
-                mediaPlayer.prepare();
-                mediaPlayer.start();
+                mediaPlayer.prepareAsync();
+                mediaPlayer.setOnPreparedListener(new OnAudioPreparedListener());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -80,6 +95,8 @@ public class AudioPlayerService extends Service {
         public boolean isPlaying(){
             return mediaPlayer.isPlaying();
         }
+
+
     }
 
 }
