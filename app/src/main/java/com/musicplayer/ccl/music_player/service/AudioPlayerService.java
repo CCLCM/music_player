@@ -12,6 +12,7 @@ import com.musicplayer.ccl.music_player.bean.AudioItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import utils.LogUtils;
 
@@ -22,7 +23,15 @@ import utils.LogUtils;
 public class AudioPlayerService extends Service {
     private ArrayList<AudioItem>  audioItems;
     private int mPostion;
+    /**播放列表循环*/
+    public static final int PLAYMODE_ALL_REPEAT = 0;
+    /**播放列表随机*/
+    public static final int PLAYMODE_RANDOM = 1;
+    /**播放列表单曲*/
+    public static final int PLAYMODE_SINGLE_REPEAT = 2;
     private  AudioServiceBinder audioServiceBinder;
+    /**播放列表模式*/
+    private int mPlayMode = PLAYMODE_ALL_REPEAT;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,7 +66,6 @@ public class AudioPlayerService extends Service {
 
     public class AudioServiceBinder extends Binder {
 
-
         private class OnAudioPreparedListener implements MediaPlayer.OnPreparedListener {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -71,6 +79,18 @@ public class AudioPlayerService extends Service {
             }
         }
 
+        /**音乐播放结束的监听器*/
+        private class OnVideoCompletionListener implements MediaPlayer.OnCompletionListener {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+                //歌曲播放结束
+
+                //根据当前播放模式,选择下一首歌曲,并播放
+
+                autoPlayNext();
+            }
+        }
 
         private MediaPlayer mediaPlayer;
         /**播放*/
@@ -86,6 +106,7 @@ public class AudioPlayerService extends Service {
                 mediaPlayer.setDataSource(audioItem.getPath());
                 mediaPlayer.prepareAsync();
                 mediaPlayer.setOnPreparedListener(new OnAudioPreparedListener());
+                mediaPlayer.setOnCompletionListener(new OnVideoCompletionListener());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -133,6 +154,48 @@ public class AudioPlayerService extends Service {
             } else {
                 Toast.makeText(AudioPlayerService.this,"已经是最后一首歌曲",Toast.LENGTH_SHORT).show();
             }
+        }
+
+        /**依次切换播放模式*/
+        public void switchPlayMode() {
+            switch (mPlayMode) {
+                case PLAYMODE_ALL_REPEAT:
+                mPlayMode = PLAYMODE_RANDOM;
+                break;
+                case PLAYMODE_RANDOM:
+                mPlayMode = PLAYMODE_SINGLE_REPEAT;
+                break;
+                case PLAYMODE_SINGLE_REPEAT:
+                mPlayMode = PLAYMODE_ALL_REPEAT;
+                break;
+            }
+        }
+        /**返回当前使用的播放模式*/
+        public int getPlayMode(){
+            return mPlayMode;
+        }
+
+        /**根据当前播放模式,选择下一首歌曲,并播放*/
+        private void autoPlayNext() {
+            switch (mPlayMode){
+                case PLAYMODE_ALL_REPEAT:
+                    //播放下一首歌曲,如果说是最后一首则播放第一首歌曲
+                    if (mPostion == audioItems.size()-1){
+                        mPostion = 0;
+                    } else {
+                        mPostion++;
+                    }
+                    break;
+                case PLAYMODE_RANDOM:
+                    //随机选取一首歌
+                    mPostion = new Random().nextInt(audioItems.size());
+                    break;
+                case PLAYMODE_SINGLE_REPEAT:
+                    //单曲循环
+                    break;
+            }
+            //播放选中的歌曲
+            play();
         }
 
     }

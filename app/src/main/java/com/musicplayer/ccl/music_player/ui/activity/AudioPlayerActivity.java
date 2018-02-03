@@ -22,7 +22,6 @@ import com.musicplayer.ccl.music_player.service.AudioPlayerService;
 
 import java.util.ArrayList;
 
-import utils.LogUtils;
 import utils.StringUtils;
 
 /**
@@ -56,6 +55,7 @@ public class AudioPlayerActivity extends BaseActivity {
     private SeekBar sk_position;
     private ImageView iv_pre;
     private ImageView iv_next;
+    private ImageView iv_playmode;
 
     @Override
     protected int layouId() {
@@ -71,6 +71,7 @@ public class AudioPlayerActivity extends BaseActivity {
         sk_position = findViewById(R.id.audio_player_sk_posion);
         iv_pre = findViewById(R.id.audio_player_iv_pre);
         iv_next = findViewById(R.id.audio_player_iv_next);
+        iv_playmode = findViewById(R.id.video_player_iv_playmode);
 
 
         iv_pause = findViewById(R.id.audio_player_iv_pause);
@@ -92,6 +93,7 @@ public class AudioPlayerActivity extends BaseActivity {
 
         iv_pre.setOnClickListener(this);
         iv_next.setOnClickListener(this);
+        iv_playmode.setOnClickListener(this);
 
     }
 
@@ -120,9 +122,33 @@ public class AudioPlayerActivity extends BaseActivity {
             case R.id.audio_player_iv_next:
                 playNext();
                 break;
+            case R.id.video_player_iv_playmode:
+                switchPlayMode();
+                break;
         }
 
     }
+    /**以次切换播放模式*/
+    private void switchPlayMode() {
+        mAudioServerBinder.switchPlayMode();
+        updatePlayModeBtn();
+    }
+
+    /**切播放模式按钮*/
+    private void updatePlayModeBtn() {
+        switch (mAudioServerBinder.getPlayMode()){
+            case AudioPlayerService.PLAYMODE_ALL_REPEAT:
+                iv_playmode.setImageResource(R.drawable.audio_playmode_allrepeat_selector);
+                break;
+            case AudioPlayerService.PLAYMODE_RANDOM:
+                iv_playmode.setImageResource(R.drawable.audio_playmode_random_selector);
+                break;
+            case AudioPlayerService.PLAYMODE_SINGLE_REPEAT:
+                iv_playmode.setImageResource(R.drawable.audio_playmode_singlerepeat_selector);
+                break;
+        }
+    }
+
     /**播放下一首歌*/
     private void playNext() {
         mAudioServerBinder.playNext();
@@ -212,6 +238,7 @@ public class AudioPlayerActivity extends BaseActivity {
             //开启进度更新
             sk_position.setMax(mAudioServerBinder.getDuration());
             startUpdatePosition();
+            updatePlayModeBtn();
         }
     }
 
