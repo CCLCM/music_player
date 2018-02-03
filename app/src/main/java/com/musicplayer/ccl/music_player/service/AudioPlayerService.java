@@ -3,6 +3,7 @@ package com.musicplayer.ccl.music_player.service;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -20,15 +21,17 @@ import utils.LogUtils;
 public class AudioPlayerService extends Service {
     private ArrayList<AudioItem>  audioItems;
     private int mPostion;
+    private  AudioServiceBinder audioServiceBinder;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return audioServiceBinder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        audioServiceBinder = new AudioServiceBinder();
     }
 
     @Override
@@ -37,15 +40,7 @@ public class AudioPlayerService extends Service {
 
         audioItems = (ArrayList<AudioItem>) intent.getSerializableExtra("audioItems");
         mPostion = intent.getIntExtra("postion",-1);
-        AudioItem audioItem = audioItems.get(mPostion);
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(audioItem.getPath());
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -57,6 +52,34 @@ public class AudioPlayerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    public class AudioServiceBinder extends Binder {
+
+        private MediaPlayer mediaPlayer;
+
+        public void play(){
+            AudioItem audioItem = audioItems.get(mPostion);
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(audioItem.getPath());
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void pause(){
+            mediaPlayer.pause();
+        }
+        public void start(){
+            mediaPlayer.start();
+        }
+
+        public boolean isPlaying(){
+            return mediaPlayer.isPlaying();
+        }
     }
 
 }

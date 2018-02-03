@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.AudioItem;
@@ -25,6 +26,8 @@ public class AudioPlayerActivity extends BaseActivity {
     private ArrayList<AudioItem> audioItems;
     private int mPostion;
     private ServiceAudioConnection mServerConnection;
+    private static AudioPlayerService.AudioServiceBinder mAudioServerBinder;
+    private ImageView iv_pause;
 
     @Override
     protected int layouId() {
@@ -33,29 +36,19 @@ public class AudioPlayerActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        iv_pause = findViewById(R.id.audio_player_iv_pause);
+
 
     }
 
     @Override
     protected void initListener() {
+        iv_pause.setOnClickListener(this);
 
     }
 
     @Override
     protected void initData() {
-
-//        audioItems = (ArrayList<AudioItem>) getIntent().getSerializableExtra("audioItems");
-//        mPostion = getIntent().getIntExtra("postion",-1);
-//        AudioItem audioItem = audioItems.get(mPostion);
-//        MediaPlayer mediaPlayer = new MediaPlayer();
-//        try {
-//            mediaPlayer.setDataSource(audioItem.getPath());
-//            mediaPlayer.prepare();
-//            mediaPlayer.start();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         Intent intent = new Intent(getIntent());
         intent.setClass(this,AudioPlayerService.class);
         mServerConnection = new ServiceAudioConnection();
@@ -65,13 +58,27 @@ public class AudioPlayerActivity extends BaseActivity {
 
     @Override
     protected void processClick(View view) {
+        switch (view.getId()){
+            case R.id.audio_player_iv_pause:
+                wwitchPauseStatus();
+                break;
+        }
 
     }
+    /**切换播放状态并更新暂停按钮的图片*/
+    private void wwitchPauseStatus() {
+        if (mAudioServerBinder.isPlaying()) {
+            mAudioServerBinder.pause();
+        } else {
+            mAudioServerBinder.start();
+        }
+    }
 
+    /**提供播放控制开端的功能*/
     private static class ServiceAudioConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
+            mAudioServerBinder = (AudioPlayerService.AudioServiceBinder) iBinder;
         }
 
         @Override

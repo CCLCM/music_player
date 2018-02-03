@@ -44,6 +44,7 @@
             android:layout_weight="1"/>
         <!--播放暂停-->
         <ImageView
+            android:id="@+id/audio_player_iv_pause"
             android:src="@drawable/audio_play_selector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
