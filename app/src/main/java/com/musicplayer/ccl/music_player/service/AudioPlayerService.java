@@ -2,6 +2,7 @@ package com.musicplayer.ccl.music_player.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
@@ -32,6 +33,7 @@ public class AudioPlayerService extends Service {
     private  AudioServiceBinder audioServiceBinder;
     /**播放列表模式*/
     private int mPlayMode = PLAYMODE_ALL_REPEAT;
+    private SharedPreferences mPreferences;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -42,6 +44,8 @@ public class AudioPlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         audioServiceBinder = new AudioServiceBinder();
+        mPreferences = getSharedPreferences("audio.conf",MODE_PRIVATE);
+        mPlayMode = mPreferences.getInt("play_id",PLAYMODE_ALL_REPEAT);
     }
 
     @Override
@@ -169,6 +173,7 @@ public class AudioPlayerService extends Service {
                 mPlayMode = PLAYMODE_ALL_REPEAT;
                 break;
             }
+            mPreferences.edit().putInt("play_id",mPlayMode).commit();
         }
         /**返回当前使用的播放模式*/
         public int getPlayMode(){
