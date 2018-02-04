@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:padding="6dp"
+    android:id="@+id/audio_notify_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--icon-->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/notification_music_playing"
+        />
+    <!--歌曲信息-->
+    <LinearLayout
+        android:layout_marginLeft="10dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <!--歌曲名-->
+        <TextView
+            android:id="@+id/audio_notify_tv_title"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="歌曲名"/>
+        <!--歌手名-->
+        <TextView
+            android:id="@+id/audio_notify_tv_arties"
+            android:textColor="@color/halfwhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="歌手名"/>
+    </LinearLayout>
+    <!--上一曲-->
+    <ImageView
+        android:id="@+id/audio_notify_iv_pre"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:src="@drawable/icon_notification_pre"/>
+    <!--下一曲-->
+
+    <ImageView
+        android:id="@+id/audio_notify_iv_next"
+        android:layout_marginRight="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:src="@drawable/icon_notification_next"/>
+</LinearLayout>

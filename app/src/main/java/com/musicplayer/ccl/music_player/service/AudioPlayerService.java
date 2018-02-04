@@ -1,5 +1,8 @@
 package com.musicplayer.ccl.music_player.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,21 +10,29 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.AudioItem;
+import com.musicplayer.ccl.music_player.ui.activity.AudioPlayerActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import utils.LogUtils;
+import utils.StringUtils;
 
 /**
  * Created by ccl on 18-2-3.
  */
 
 public class AudioPlayerService extends Service {
+    private static final String NOTIFY_TYPE = "notify_type";
+    private static final int NOTIFY_TYPE_CONTENT = 0;
+    private static final int NOTIFY_TYPE_PRE = 1;
+    private static final int NOTIFY_TYPE_NEXT = 2;
     private ArrayList<AudioItem>  audioItems;
     private int mPostion;
     /**播放列表循环*/
@@ -51,9 +62,24 @@ public class AudioPlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        int notityType = intent.getIntExtra(NOTIFY_TYPE,-1);
+        if (notityType != -1) {
+            //从通知栏启动
+            switch (notityType) {
+                case NOTIFY_TYPE_PRE:
+                    audioServiceBinder.playPre();
+                    break;
+                case NOTIFY_TYPE_NEXT:
+                    audioServiceBinder.playNext();
+                    break;
+            }
+        } else {
+            //从应用启动
+            audioItems = (ArrayList<AudioItem>) intent.getSerializableExtra("audioItems");
+            mPostion = intent.getIntExtra("postion",-1);
+            audioServiceBinder.play();
+        }
 
-        audioItems = (ArrayList<AudioItem>) intent.getSerializableExtra("audioItems");
-        mPostion = intent.getIntExtra("postion",-1);
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -80,6 +106,8 @@ public class AudioPlayerService extends Service {
                 Intent intent = new Intent("com.chencl.mobileplayer.audio_player");
                 intent.putExtra("audioitem",audioitem);
                 sendBroadcast(intent);
+                //显示通知
+                showNotification();
             }
         }
 
@@ -117,10 +145,14 @@ public class AudioPlayerService extends Service {
         }
         /**暂停*/
         public void pause(){
+            cancleNotification();
             mediaPlayer.pause();
         }
+
+
         /**播放*/
         public void start(){
+            showNotification();
             mediaPlayer.start();
         }
         /**播放的状态*/
@@ -203,6 +235,62 @@ public class AudioPlayerService extends Service {
             play();
         }
 
+    }
+
+    private void showNotification() {
+        Notification notification = showCustomViewNotification();
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(NOTIFY_TYPE_CONTENT,notification);
+
+    }
+
+    private Notification showCustomViewNotification() {
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setSmallIcon(R.drawable.notification_music_playing);
+        builder.setTicker("正在播放:" + audioItems.get(mPostion).getTitle());
+        builder.setContent(getRemoteView());
+        return builder.getNotification();
+    }
+
+
+    private void cancleNotification() {
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancel(NOTIFY_TYPE_CONTENT);
+
+    }
+
+
+    private RemoteViews getRemoteView() {
+        RemoteViews remoteView = new RemoteViews(getPackageName(), R.layout.audio_notity);
+        remoteView.setTextViewText(R.id.audio_notify_tv_title, StringUtils.formatDisplyName(audioItems.get(mPostion).getTitle()));
+        remoteView.setTextViewText(R.id.audio_notify_tv_arties,audioItems.get(mPostion).getArties());
+
+        remoteView.setOnClickPendingIntent(R.id.audio_notify_iv_pre,getPreIntent());
+        remoteView.setOnClickPendingIntent(R.id.audio_notify_iv_next,getNextIntent());
+        remoteView.setOnClickPendingIntent(R.id.audio_notify_layout,getContentIntent());
+
+        return remoteView;
+    }
+
+    private PendingIntent getContentIntent() {
+        Intent intent = new Intent(this,AudioPlayerActivity.class);
+        intent.putExtra(NOTIFY_TYPE,NOTIFY_TYPE_CONTENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
+    }
+
+    private PendingIntent getNextIntent() {
+        Intent intent = new Intent(this,AudioPlayerService.class);
+        intent.putExtra(NOTIFY_TYPE,NOTIFY_TYPE_NEXT);
+        PendingIntent pendingIntent = PendingIntent.getService(this,1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
+    }
+
+    private PendingIntent getPreIntent() {
+        Intent intent = new Intent(this,AudioPlayerService.class);
+        intent.putExtra(NOTIFY_TYPE,NOTIFY_TYPE_PRE);
+        PendingIntent pendingIntent = PendingIntent.getService(this,2,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
     }
 
 }
