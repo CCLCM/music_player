@@ -72,12 +72,20 @@ public class AudioPlayerService extends Service {
                 case NOTIFY_TYPE_NEXT:
                     audioServiceBinder.playNext();
                     break;
+                case NOTIFY_TYPE_CONTENT:
+                    audioServiceBinder.notifyUpdateUI();
+                    break;
             }
         } else {
             //从应用启动
-            audioItems = (ArrayList<AudioItem>) intent.getSerializableExtra("audioItems");
-            mPostion = intent.getIntExtra("postion",-1);
-            audioServiceBinder.play();
+            int postion = intent.getIntExtra("postion",-1);
+            if (mPostion == postion) {
+                audioServiceBinder.notifyUpdateUI();
+            } else {
+                mPostion = postion;
+                audioItems = (ArrayList<AudioItem>) intent.getSerializableExtra("audioItems");
+                audioServiceBinder.play();
+            }
         }
 
 
@@ -101,14 +109,18 @@ public class AudioPlayerService extends Service {
             public void onPrepared(MediaPlayer mp) {
                 //音乐资源准备完成准备播放
                 mediaPlayer.start();
-                //获取当前正在播放的歌曲
-                AudioItem  audioitem = audioItems.get(mPostion);
-                Intent intent = new Intent("com.chencl.mobileplayer.audio_player");
-                intent.putExtra("audioitem",audioitem);
-                sendBroadcast(intent);
+                notifyUpdateUI();
                 //显示通知
                 showNotification();
             }
+        }
+        /**通知界面更新*/
+        private void notifyUpdateUI() {
+            //获取当前正在播放的歌曲
+            AudioItem audioitem = audioItems.get(mPostion);
+            Intent intent = new Intent("com.chencl.mobileplayer.audio_player");
+            intent.putExtra("audioitem",audioitem);
+            sendBroadcast(intent);
         }
 
         /**音乐播放结束的监听器*/

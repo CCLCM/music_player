@@ -191,7 +191,6 @@ public class AudioPlayerActivity extends BaseActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mAudioServerBinder = (AudioPlayerService.AudioServiceBinder) iBinder;
-            mAudioServerBinder.play();
         }
 
         @Override
