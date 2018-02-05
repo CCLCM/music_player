@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.annotation.IntegerRes;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
@@ -30,6 +31,9 @@ public class LyricView  extends AppCompatTextView {
     private ArrayList<Lyrics> lyrics;
     private int currentLine;
     private int lineHeight;
+    private int mDuration;
+    private int mPosition;
+
     public LyricView(Context context) {
         super(context);
         initView();
@@ -82,12 +86,26 @@ public class LyricView  extends AppCompatTextView {
     }
 
     private void drawMulitLinText(Canvas canvas) {
-        // 绘制行的Y= 居中的Y位置 + (要绘制的行 - 居中行) * 行高
         Lyrics lyric = lyrics.get(currentLine);
+
+        int lineTime;
+        if (currentLine != lyrics.size() -1){
+            Lyrics nextLyric = lyrics.get(currentLine+1);
+            //不是最后一行的时候
+            lineTime= nextLyric.getStartPoint() - lyric.getStartPoint();
+        } else {
+            //最后一行的时候
+            lineTime = mDuration - lyric.getStartPoint();
+        }
+
+        int passTime = mPosition -lyric.getStartPoint();
+        float pastPrencent = passTime /(float)lineTime;
+        int offsetY = (int) (pastPrencent *lineHeight);
+
         Rect bound = new Rect();
         mPant.getTextBounds(lyric.getContent(),0,lyric.getContent().length(),bound);
         int halfTextH = bound.height() / 2;
-        int centerY = mHalfViewH + halfTextH;
+        int centerY = mHalfViewH + halfTextH - offsetY;
         for (int i = 0;i<lyrics.size();i++){
             if (i == currentLine) {
                 mPant.setTextSize(hightTextSize);
@@ -97,6 +115,7 @@ public class LyricView  extends AppCompatTextView {
                 mPant.setTextSize(normaTextSize);
                 mPant.setColor(normalColor);
             }
+            // 绘制行的Y= 居中的Y位置 + (要绘制的行 - 居中行) * 行高
             int drawY= centerY + (i - currentLine) * lineHeight;
             drawHrizotalText(canvas,lyrics.get(i).getContent(),drawY);
         }
@@ -122,6 +141,8 @@ public class LyricView  extends AppCompatTextView {
 
     /**根据播放到position的时间 选择高亮的歌词*/
     public void rool(int position,int duration) {
+        mPosition = position;
+        mDuration = duration;
         //高亮的行为:起始时间小于position ,且下一行开始的时间大于postion
         for (int i = 0;i < lyrics.size(); i++) {
             Lyrics lyric = lyrics.get(i);
