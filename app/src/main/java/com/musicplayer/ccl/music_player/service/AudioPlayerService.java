@@ -73,17 +73,19 @@ public class AudioPlayerService extends Service {
                     audioServiceBinder.playNext();
                     break;
                 case NOTIFY_TYPE_CONTENT:
+                    LogUtils.e(getClass(),"chencl_  onStartCommand  notifyUpdateUI");
                     audioServiceBinder.notifyUpdateUI();
                     break;
             }
         } else {
             //从应用启动
             int postion = intent.getIntExtra("postion",-1);
+            LogUtils.e(getClass(),"chencl_  getIntExtra  从应用启动 " + " mPostion " + mPostion  +  "  postion  "  +postion);
             if (mPostion == postion) {
                 audioServiceBinder.notifyUpdateUI();
             } else {
-                mPostion = postion;
                 audioItems = (ArrayList<AudioItem>) intent.getSerializableExtra("audioItems");
+                mPostion = postion;
                 audioServiceBinder.play();
             }
         }
@@ -104,9 +106,12 @@ public class AudioPlayerService extends Service {
 
     public class AudioServiceBinder extends Binder {
 
+
+
         private class OnAudioPreparedListener implements MediaPlayer.OnPreparedListener {
             @Override
             public void onPrepared(MediaPlayer mp) {
+                LogUtils.e(getClass(),"onPrepared   ");
                 //音乐资源准备完成准备播放
                 mediaPlayer.start();
                 notifyUpdateUI();
@@ -116,6 +121,7 @@ public class AudioPlayerService extends Service {
         }
         /**通知界面更新*/
         private void notifyUpdateUI() {
+            LogUtils.e(getClass(),"  notifyUpdateUI");
             //获取当前正在播放的歌曲
             AudioItem audioitem = audioItems.get(mPostion);
             Intent intent = new Intent("com.chencl.mobileplayer.audio_player");
@@ -124,7 +130,7 @@ public class AudioPlayerService extends Service {
         }
 
         /**音乐播放结束的监听器*/
-        private class OnVideoCompletionListener implements MediaPlayer.OnCompletionListener {
+        private class OnAudioCompletionListener implements MediaPlayer.OnCompletionListener {
             @Override
             public void onCompletion(MediaPlayer mp) {
 
@@ -133,12 +139,15 @@ public class AudioPlayerService extends Service {
                 //根据当前播放模式,选择下一首歌曲,并播放
 
                 autoPlayNext();
+                LogUtils.e(getClass(),"chencl_  onCompletion");
             }
+
         }
 
         private MediaPlayer mediaPlayer;
         /**播放*/
         public void play(){
+            LogUtils.e(getClass(),"chencl_  mPostion   ........" +mPostion  );
             AudioItem audioItem = audioItems.get(mPostion);
             /**如果有播放的歌曲则释放歌曲*/
             if (mediaPlayer != null) {
@@ -150,7 +159,7 @@ public class AudioPlayerService extends Service {
                 mediaPlayer.setDataSource(audioItem.getPath());
                 mediaPlayer.prepareAsync();
                 mediaPlayer.setOnPreparedListener(new OnAudioPreparedListener());
-                mediaPlayer.setOnCompletionListener(new OnVideoCompletionListener());
+                mediaPlayer.setOnCompletionListener(new OnAudioCompletionListener());
             } catch (IOException e) {
                 e.printStackTrace();
             }

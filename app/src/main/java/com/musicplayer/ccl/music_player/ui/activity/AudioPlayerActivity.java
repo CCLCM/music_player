@@ -25,6 +25,7 @@ import com.musicplayer.ccl.music_player.service.AudioPlayerService;
 import java.io.File;
 import java.util.ArrayList;
 
+import utils.LogUtils;
 import utils.StringUtils;
 
 /**
@@ -32,9 +33,6 @@ import utils.StringUtils;
  */
 
 public class AudioPlayerActivity extends BaseActivity {
-
-    private ArrayList<AudioItem> audioItems;
-    private int mPostion;
     private ServiceAudioConnection mServerConnection;
     private static AudioPlayerService.AudioServiceBinder mAudioServerBinder;
     private ImageView iv_pause;
@@ -252,13 +250,12 @@ public class AudioPlayerActivity extends BaseActivity {
             //开始滚动歌词
             startRollLyric();
 
-
         }
     }
     /**使用当前播放进入更新歌词 ,并发送一个延迟的消息*/
     private void startRollLyric() {
       tv_lyric.rool(mAudioServerBinder.getCurrentPosition(),mAudioServerBinder.getDuration());
-      mHandler.sendEmptyMessage(MSG_ROOL_LURIC);
+      mHandler.sendEmptyMessageDelayed(MSG_ROOL_LURIC,50);
     }
 
     /**更新播放进度 ,并延迟一段时间之后再更新*/
