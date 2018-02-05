@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.Lyrics;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -64,11 +65,11 @@ public class LyricView  extends AppCompatTextView {
 
         //伪造数据
         lyrics = new ArrayList<>();
-        for (int i = 0;i<30;i++){
-            lyrics.add(new Lyrics(i*2000,"当前歌词的行数"+i));
-        }
-
-        currentLine = 5;
+//        for (int i = 0;i<30;i++){
+//            lyrics.add(new Lyrics(i*2000,"当前歌词的行数"+i));
+//        }
+//
+//        currentLine = 5;
     }
 
     @Override
@@ -81,8 +82,11 @@ public class LyricView  extends AppCompatTextView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        drawSingLinText(canvas);
-        drawMulitLinText(canvas);
+        if (lyrics == null || lyrics.size() == 0) {
+            drawSingLinText(canvas);
+        } else {
+            drawMulitLinText(canvas);
+        }
     }
 
     private void drawMulitLinText(Canvas canvas) {
@@ -160,5 +164,12 @@ public class LyricView  extends AppCompatTextView {
             }
         }
         invalidate();
+    }
+
+    public void setLyricFile(File lyricFile){
+        lyrics.clear();
+        lyrics = LyricParse.paseFromFile(lyricFile);
+        currentLine =0;
+
     }
 }

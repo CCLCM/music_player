@@ -1,10 +1,12 @@
 package com.musicplayer.ccl.music_player.bean;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by ccl on 18-2-5.
  */
 
-public class Lyrics {
+public class Lyrics  implements Comparable<Lyrics> {
     private int startPoint; //歌词的起始时间
     private String content;//歌词的正文
 
@@ -35,5 +37,10 @@ public class Lyrics {
                 "startPoint=" + startPoint +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(@NonNull Lyrics lyrics) {
+        return startPoint - lyrics.startPoint;
     }
 }

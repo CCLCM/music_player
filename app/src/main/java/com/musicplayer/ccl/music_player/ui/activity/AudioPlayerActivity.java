@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -21,6 +22,7 @@ import com.musicplayer.ccl.music_player.bean.AudioItem;
 import com.musicplayer.ccl.music_player.lyric.LyricView;
 import com.musicplayer.ccl.music_player.service.AudioPlayerService;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import utils.StringUtils;
@@ -245,8 +247,12 @@ public class AudioPlayerActivity extends BaseActivity {
             startUpdatePosition();
             updatePlayModeBtn();
 
+            File lyricFile = new File(Environment.getExternalStorageDirectory(),"Music/Lyric/"+StringUtils.formatDisplyName(audioItem.getTitle())+".lrc");
+            tv_lyric.setLyricFile(lyricFile);
             //开始滚动歌词
             startRollLyric();
+
+
         }
     }
     /**使用当前播放进入更新歌词 ,并发送一个延迟的消息*/
