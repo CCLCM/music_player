@@ -120,4 +120,24 @@ public class LyricView  extends AppCompatTextView {
         canvas.drawText(text,drawX,drawY,mPant);
     }
 
+    /**根据播放到position的时间 选择高亮的歌词*/
+    public void rool(int position,int duration) {
+        //高亮的行为:起始时间小于position ,且下一行开始的时间大于postion
+        for (int i = 0;i < lyrics.size(); i++) {
+            Lyrics lyric = lyrics.get(i);
+            int nextTime = 0;
+            if (i != lyrics.size() -1) {
+                Lyrics nextLyric = lyrics.get(i+1);
+                nextTime = nextLyric.getStartPoint();
+            } else {
+                //最后一行
+                nextTime = duration;
+            }
+            if (lyric.getStartPoint() <= position && nextTime > position){
+                currentLine = i;
+                break;
+            }
+        }
+        invalidate();
+    }
 }

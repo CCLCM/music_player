@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.musicplayer.ccl.music_player.R;
 import com.musicplayer.ccl.music_player.bean.AudioItem;
+import com.musicplayer.ccl.music_player.lyric.LyricView;
 import com.musicplayer.ccl.music_player.service.AudioPlayerService;
 
 import java.util.ArrayList;
@@ -41,12 +42,16 @@ public class AudioPlayerActivity extends BaseActivity {
     private ImageView iv_wave;
     private TextView tv_position;
     private static  final  int MSG_UPDATE_POSITION =0;
+    private static  final  int MSG_ROOL_LURIC =1;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case MSG_UPDATE_POSITION:
                     startUpdatePosition();
+                    break;
+                case MSG_ROOL_LURIC:
+                    startRollLyric();
                     break;
             }
 
@@ -56,6 +61,7 @@ public class AudioPlayerActivity extends BaseActivity {
     private ImageView iv_pre;
     private ImageView iv_next;
     private ImageView iv_playmode;
+    private LyricView tv_lyric;
 
     @Override
     protected int layouId() {
@@ -72,7 +78,7 @@ public class AudioPlayerActivity extends BaseActivity {
         iv_pre = findViewById(R.id.audio_player_iv_pre);
         iv_next = findViewById(R.id.audio_player_iv_next);
         iv_playmode = findViewById(R.id.video_player_iv_playmode);
-
+        tv_lyric = findViewById(R.id.audio_player_tv_lyric);
 
         iv_pause = findViewById(R.id.audio_player_iv_pause);
 
@@ -238,7 +244,15 @@ public class AudioPlayerActivity extends BaseActivity {
             sk_position.setMax(mAudioServerBinder.getDuration());
             startUpdatePosition();
             updatePlayModeBtn();
+
+            //开始滚动歌词
+            startRollLyric();
         }
+    }
+    /**使用当前播放进入更新歌词 ,并发送一个延迟的消息*/
+    private void startRollLyric() {
+      tv_lyric.rool(mAudioServerBinder.getCurrentPosition(),mAudioServerBinder.getDuration());
+      mHandler.sendEmptyMessage(MSG_ROOL_LURIC);
     }
 
     /**更新播放进度 ,并延迟一段时间之后再更新*/
