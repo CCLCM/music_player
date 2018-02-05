@@ -20,12 +20,9 @@
         android:textSize="16sp"
         android:text="歌手名"/>
     <!--歌词-->
-    <TextView
-        android:gravity="center"
-        android:layout_below="@+id/audio_player_iv_wave"
+    <com.musicplayer.ccl.music_player.lyric.LyricView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="歌词"
-        android:textSize="20sp"
-        android:textColor="@color/white"/>
+        android:id="@+id/audio_player_tv_lyric"
+        android:layout_below="@+id/audio_player_iv_wave"/>
 </RelativeLayout>

@@ -227,7 +227,7 @@ public class AudioPlayerActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
             AudioItem audioItem = (AudioItem) intent.getSerializableExtra("audioitem");
             //初始化歌曲名称
-            tv_tittle.setText(audioItem.getTitle());
+            tv_tittle.setText(StringUtils.formatDisplyName(audioItem.getTitle()));
             //初始化歌手名字
             tv_arties.setText(audioItem.getArties());
 
